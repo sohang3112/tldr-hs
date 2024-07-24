@@ -1,0 +1,3 @@
+# *.golden files contain expected outputs of tests
+# Prevent line endings conversion on Windows, otherwise tests will fail on Windows
+*.golden -text
