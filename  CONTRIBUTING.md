@@ -6,3 +6,4 @@ After forking this repository & cloning it locally, follow the steps below.
 - Install appropriate GHC version for this project: `stack setup`
 - Build executable: `stack build`
 - Run the built executable: `stack exec tldr`
+- *Optional*: Run tests: `stack test`
