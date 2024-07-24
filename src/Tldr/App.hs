@@ -8,11 +8,12 @@ import Data.List (intercalate)
 import Data.Version (showVersion)
 import Options.Applicative
 import Paths_tldr (version)
-import System.Environment (getArgs)
 import Tldr.App.Constant (platformDirs)
 import Tldr.App.Handler
 import Tldr.Types
 import Control.Monad (void)
+import Data.Functor.Identity (Identity)
+import System.Exit (ExitCode(ExitSuccess, ExitFailure))
 
 programOptions :: Parser TldrOpts
 programOptions =
@@ -95,10 +96,10 @@ tldrParserInfo =
         (showVersion version)
         (long "version" <> short 'v' <> help "Show version")
 
-appMain :: IO ()
-appMain = do
-  args <- getArgs
-  case execParserPure (prefs showHelpOnEmpty) tldrParserInfo args of
-    failOpts@(Failure _) -> void $ handleParseResult failOpts
-    Success opts -> handleTldrOpts opts
-    compOpts@(CompletionInvoked _) -> void $ handleParseResult compOpts
+-- perform action based on CLI arguments list
+appMain :: [String] -> IO ExitCode
+appMain args = case execParserPure (prefs showHelpOnEmpty) tldrParserInfo args of
+    failOpts@(Failure _) -> handleParseResult failOpts >> pure (ExitFailure 1)
+    Success opts -> handleTldrOpts opts >> pure ExitSuccess
+    compOpts@(CompletionInvoked _) -> handleParseResult compOpts >> pure (ExitFailure 1)  -- command tab completion in shell
+
