@@ -20,6 +20,7 @@ import GHC.IO.Handle (Handle)
 import System.Console.ANSI
 import Tldr.Parser
 import Tldr.Types (ConsoleSetting(..), ColorSetting (..))
+-- import Tldr.App (appMain)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 

@@ -28,6 +28,7 @@ data TldrCommand
   = UpdateIndex
   | ViewPage ViewOptions
              [String]
+  | ListInstalled
   | About
   deriving (Show, Eq, Ord)
 

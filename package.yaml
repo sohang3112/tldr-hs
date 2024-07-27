@@ -71,5 +71,8 @@ tests:
     dependencies:
     - base
     - tldr
+    - process
     - tasty
     - tasty-golden
+    - tasty-hunit
+#    - tasty-quickcheck

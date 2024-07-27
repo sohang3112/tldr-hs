@@ -19,7 +19,7 @@ import Data.Maybe (fromMaybe)
 import qualified Data.Set as Set
 import Data.Version (showVersion)
 import Data.Time.Clock
-import Control.Monad (when)
+import Control.Monad (when, mapM_)
 import Options.Applicative
 import Paths_tldr (version)
 import System.Directory
@@ -30,10 +30,11 @@ import System.Directory
   , doesDirectoryExist
   , getModificationTime
   , getXdgDirectory
+  , listDirectory
   )
 import System.Environment (lookupEnv, getExecutablePath)
 import System.Exit (exitFailure)
-import System.FilePath ((<.>), (</>))
+import System.FilePath ((<.>), (</>), takeBaseName)
 import System.IO (hPutStrLn, stderr, stdout)
 import Network.HTTP.Simple
 import Codec.Archive.Zip
@@ -69,6 +70,7 @@ handleTldrOpts opts@TldrOpts {..} =
   case tldrAction of
     UpdateIndex -> updateTldrPages
     About -> handleAboutFlag
+    ListInstalled -> listInstalled
     ViewPage voptions pages -> do
       shouldPerformUpdate <- updateNecessary opts
       when shouldPerformUpdate updateTldrPages
@@ -117,6 +119,14 @@ updateTldrPages = do
   response <- httpLBS $ parseRequest_ pagesUrl
   let zipArchive = toArchive $ getResponseBody response
   extractFilesFromArchive [OptDestination dataDir] zipArchive
+
+listInstalled :: IO ()
+listInstalled = do
+    dataDir <- getXdgDirectory XdgData tldrDirName
+    let pagesDir = dataDir </> "pages"   -- TODO: mk configurable (language)
+    commonCmdPaths <- listDirectory (pagesDir </> "common")
+    osCmdPaths <- listDirectory (pagesDir </> "linux")         -- TODO: mk configurable OS
+    mapM_ (putStrLn . takeBaseName) (commonCmdPaths <> osCmdPaths)
 
 computeLocale :: Maybe String -> Locale
 computeLocale lang = case map toLower <$> lang of

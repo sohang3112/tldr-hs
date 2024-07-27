@@ -17,7 +17,9 @@ import System.Exit (ExitCode(ExitSuccess, ExitFailure))
 
 programOptions :: Parser TldrOpts
 programOptions =
-  TldrOpts <$> (updateIndexCommand <|> viewPageCommand <|> aboutFlag) <*> autoUpdateIntervalOpt <*> colorFlags
+  TldrOpts <$> 
+  (updateIndexCommand <|> viewPageCommand <|> listInstalledCommand <|> aboutFlag) 
+  <*> autoUpdateIntervalOpt <*> colorFlags
 
 updateIndexCommand :: Parser TldrCommand
 updateIndexCommand =
@@ -43,6 +45,12 @@ viewPageCommand :: Parser TldrCommand
 viewPageCommand =
   ViewPage <$> viewOptionsParser <*>
   some (strArgument (metavar "COMMAND" <> help "name of the command"))
+
+listInstalledCommand :: Parser TldrCommand
+listInstalledCommand =
+  flag'
+    ListInstalled
+    (long "list" <> help "List installed tldr pages")
 
 platformFlag :: Parser (Maybe String)
 platformFlag =
