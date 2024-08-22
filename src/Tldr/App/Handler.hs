@@ -70,7 +70,7 @@ handleTldrOpts opts@TldrOpts {..} =
   case tldrAction of
     UpdateIndex -> updateTldrPages
     About -> handleAboutFlag
-    ListInstalled -> listInstalled
+    ListInstalled viewOpts -> listInstalled viewOpts
     ViewPage voptions pages -> do
       shouldPerformUpdate <- updateNecessary opts
       when shouldPerformUpdate updateTldrPages
@@ -120,8 +120,15 @@ updateTldrPages = do
   let zipArchive = toArchive $ getResponseBody response
   extractFilesFromArchive [OptDestination dataDir] zipArchive
 
-listInstalled :: IO ()
-listInstalled = do
+-- TODO: make this compatible with --list in python version of tldr
+-- [ ] in both cases, before "listDirectory", check if dir exists
+-- [ ] 
+-- [ ] viewOpts:
+--      [ ] platform=Nothing => all platforms (iter over checkDirs const defined in Constant.hs)
+--      [ ] langs=Nothing => english   (tldr-python has all langs, but IMO that doesn't make sense)
+-- [ ] print in format f"{file.stem} ({language})"
+listInstalled :: ViewOptions -> IO ()
+listInstalled viewOpts = do
     dataDir <- getXdgDirectory XdgData tldrDirName
     let pagesDir = dataDir </> "pages"   -- TODO: mk configurable (language)
     commonCmdPaths <- listDirectory (pagesDir </> "common")

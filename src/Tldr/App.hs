@@ -6,10 +6,15 @@ module Tldr.App
 
 import Data.List (intercalate)
 import Data.Version (showVersion)
-import Options.Applicative
+import Control.Applicative ((<|>), optional, some)
+import Options.Applicative (
+    Parser, ParserResult(Success, Failure, CompletionInvoked), ParserInfo, 
+    handleParseResult, flag', showHelpOnEmpty, prefs, execParserPure, help, short, long, 
+    infoOption, header, progDesc, fullDesc, helper, info, metavar, strOption, strArgument,
+    option, auto)
 import Paths_tldr (version)
 import Tldr.App.Constant (platformDirs)
-import Tldr.App.Handler
+import Tldr.App.Handler 
 import Tldr.Types
 import Control.Monad (void)
 import Data.Functor.Identity (Identity)
@@ -48,9 +53,10 @@ viewPageCommand =
 
 listInstalledCommand :: Parser TldrCommand
 listInstalledCommand =
-  flag'
-    ListInstalled
-    (long "list" <> help "List installed tldr pages")
+--   flag'
+--     ListInstalled
+--     (long "list" <> help " List all available commands for operating system")
+    ListInstalled <$> viewOptionsParser
 
 platformFlag :: Parser (Maybe String)
 platformFlag =
